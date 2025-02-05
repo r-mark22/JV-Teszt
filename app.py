@@ -47,12 +47,15 @@ if st.button("Eredmény kiértékelése"):
             st.write(f"- Helyes válasz: {correct_option}")
             st.write("---")
 
-# Üres helykitöltő a görgetéshez
-scroll_placeholder = st.empty()
+# JavaScript görgetés az oldal tetejére
+scroll_to_top_js = """
+    <script>
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    </script>
+"""
 
 # Új teszt indítása
 if st.button("Új teszt kezdése"):
     st.session_state.clear()
-    with scroll_placeholder.container():
-        st.markdown("# Új teszt generálása... Várj egy pillanatot!")
+    st.markdown(scroll_to_top_js, unsafe_allow_html=True)
     st.rerun()
