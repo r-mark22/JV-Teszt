@@ -24,11 +24,12 @@ user_answers = st.session_state.user_answers
 
 for idx, row in questions.iterrows():
     st.subheader(f"{idx + 1}. {row['ID']} - {row['Kérdés']}")
-    options = ["Válassz egy lehetőséget"] + [row['a) válasz'], row['b) válasz'], row['c) válasz'], row['d) válasz']]
+    options = [row['a) válasz'], row['b) válasz'], row['c) válasz'], row['d) válasz']]
+    default_selection = options.index(st.session_state.user_answers[idx]) if st.session_state.user_answers[idx] in options else -1
     user_answer = st.radio(
-        "", options, key=f"question_{idx}", index=0
+        "", options, key=f"question_{idx}", index=default_selection if default_selection != -1 else None
     )
-    if user_answer != "Válassz egy lehetőséget":
+    if user_answer:
         st.session_state.user_answers[idx] = user_answer
 
 # Kiértékelés gomb
@@ -48,6 +49,4 @@ if st.button("Eredmény kiértékelése"):
 
 # Új teszt indítása
 if st.button("Új teszt kezdése"):
-    del st.session_state.questions
-    del st.session_state.user_answers
-    st.experimental_rerun()
+    st.session_state.clear()
