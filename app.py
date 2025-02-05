@@ -3,7 +3,7 @@ import pandas as pd
 import random
 
 # Az Excel-fájl permanens beolvasása GitHub repositoryból
-DATA_URL = "https://raw.githubusercontent.com/felhasznalonev/repo-neve/main/kerdesek.xlsx"
+DATA_URL = "https://raw.githubusercontent.com/r-mark22/JV-Teszt/main/kerdesek.xlsx"
 
 @st.cache_data
 def load_data():
@@ -50,4 +50,5 @@ if st.button("Eredmény kiértékelése"):
 # Új teszt indítása
 if st.button("Új teszt kezdése"):
     st.session_state.clear()
+    st.experimental_set_query_params(scroll_to_top=True)
     st.experimental_rerun()
