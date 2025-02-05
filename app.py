@@ -2,79 +2,40 @@ import streamlit as st
 import pandas as pd
 import random
 
-# Fájl feltöltése csak egyszer
+# Az Excel-fájl permanens beolvasása GitHub repositoryból
+DATA_URL = "https://raw.githubusercontent.com/r-mark22/JV-Teszt/main/kerdesek.xlsx"
+
 @st.cache_data
 def load_data():
-    df = pd.read_excel("kerdesek.xlsx", sheet_name=None)
-    sheet_name = list(df.keys())[0]  # Az első munkalap használata
-    df = df[sheet_name]
-    df = df.dropna().reset_index(drop=True)
-    return df
+    return pd.read_excel(DATA_URL)
 
-df = load_data()
+data = load_data()
 
-# Teszt generálása
-def generate_test():
-    st.session_state['random_questions'] = df.sample(n=25, random_state=random.randint(1, 10000))
-    st.session_state['user_answers'] = {}
-    st.session_state['test_finished'] = False
+st.title("Labdarúgó Játékvezetői Vizsgafelkészítő Teszt")
 
-if 'random_questions' not in st.session_state:
-    generate_test()
+# Kérdések előkészítése
+questions = data.sample(25).reset_index(drop=True)  # Véletlenszerűen kiválasztott 25 kérdés
+user_answers = []
 
-# Oldal tetejére ugrásra szolgáló konténer
-scroll_placeholder = st.empty()
+for idx, row in questions.iterrows():
+    st.subheader(f"{idx + 1}. {row['ID']} - {row['Kérdés']}")
+    options = [row['Válasz A'], row['Válasz B'], row['Válasz C'], row['Válasz D']]
+    user_answer = st.radio("Válassz egy lehetőséget:", options, key=f"question_{idx}", index=-1)
+    user_answers.append((user_answer, row['Helyes Válasz']))
 
-st.title("Labdarúgó Játékvezetői Teszt")
-st.write("Véletlenszerűen kiválasztott 25 kérdés.")
-
-for index, row in st.session_state['random_questions'].iterrows():
-    st.subheader(f"{row['ID']}. {row['Kérdés']}")
-    options = {'A': row['a) válasz'], 'B': row['b) válasz'], 'C': row['c) válasz'], 'D': row['d) válasz']}
-    selected_option = st.radio(
-        f"Válassz egy választ:", 
-        list(options.keys()), 
-        format_func=lambda x: options[x], 
-        index=None,  # Alapértelmezett nincs kijelölve
-        key=f"question_{index}"
-    )
-    st.session_state['user_answers'][index] = selected_option
-
-if st.button("Eredmények kiértékelése"):
-    score = 0
-    incorrect_answers = []
+# Kiértékelés gomb
+if st.button("Eredmény kiértékelése"):
+    correct_answers = sum(1 for user_answer, correct_answer in user_answers if user_answer == correct_answer)
+    st.write(f"Összes helyes válasz: {correct_answers} / 25")
     
-    for i, row in st.session_state['random_questions'].iterrows():
-        user_answer = st.session_state['user_answers'].get(i, None)
-        correct_answer_letter = row['Helyes válasz'].strip().upper()
-        correct_column = correct_answer_letter + ') válasz'
-        
-        if correct_answer_letter in ['A', 'B', 'C', 'D'] and correct_column in row:
-            correct_text = row[correct_column]
-        else:
-            correct_text = "**⚠️ Hiba: a helyes válasz nincs megfelelően megadva az Excelben!**"
-
-        user_answer_text = row.get(user_answer + ') válasz', "Nem adott választ") if user_answer else "Nem adott választ"
-
-        if user_answer == correct_answer_letter:
-            score += 1
-        else:
-            incorrect_answers.append((row['ID'], row['Kérdés'], user_answer_text, correct_answer_letter, correct_text))
-
-    st.session_state['test_finished'] = True
-
-    st.write(f"### Elért pontszám: {score}/25")
-
-    if incorrect_answers:
-        st.write("### Hibásan megválaszolt kérdések:")
-        for q_id, question, wrong, correct_letter, correct_text in incorrect_answers:
-            st.write(f"**{q_id}. {question}**")
-            st.write(f"🔴 Rossz válasz: {wrong}")
-            st.write(f"✅ Helyes válasz: ({correct_letter}) - {correct_text}")
+    st.subheader("Hibás válaszok:")
+    for idx, (user_answer, correct_answer) in enumerate(user_answers):
+        if user_answer != correct_answer:
+            st.write(f"{idx + 1}. {questions.loc[idx, 'ID']} - {questions.loc[idx, 'Kérdés']}")
+            st.write(f"- A te válaszod: {user_answer}")
+            st.write(f"- Helyes válasz: {correct_answer}")
             st.write("---")
 
-# Új teszt generálása és az oldal tetejére ugrás
-if st.session_state.get('test_finished', False):
-    if st.button("Új teszt generálása"):
-        generate_test()
-        scroll_placeholder.markdown("<script>window.scrollTo(0, 0);</script>", unsafe_allow_html=True)  # Oldal tetejére ugrás
+# Új teszt indítása
+if st.button("Új teszt kezdése"):
+    st.experimental_rerun()
