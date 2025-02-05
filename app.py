@@ -3,7 +3,7 @@ import pandas as pd
 import random
 
 # Az Excel-fájl permanens beolvasása GitHub repositoryból
-DATA_URL = "https://raw.githubusercontent.com/r-mark22/JV-Teszt/main/kerdesek.xlsx"
+DATA_URL = "https://raw.githubusercontent.com/felhasznalonev/repo-neve/main/kerdesek.xlsx"
 
 @st.cache_data
 def load_data():
@@ -23,7 +23,7 @@ questions = st.session_state.questions
 user_answers = st.session_state.user_answers
 
 for idx, row in questions.iterrows():
-    st.subheader(f"{idx + 1}. {row['ID']} - {row['Kérdés']}")
+    st.subheader(f"{idx + 1}. {row['Kérdés']}")
     options = [row['a) válasz'], row['b) válasz'], row['c) válasz'], row['d) válasz']]
     default_selection = options.index(st.session_state.user_answers[idx]) if st.session_state.user_answers[idx] in options else -1
     user_answer = st.radio(
@@ -42,7 +42,7 @@ if st.button("Eredmény kiértékelése"):
     for idx, user_answer in enumerate(st.session_state.user_answers):
         correct_option = questions.loc[idx, questions.loc[idx, 'Helyes válasz'] + ') válasz']
         if user_answer != correct_option:
-            st.write(f"{idx + 1}. {questions.loc[idx, 'ID']} - {questions.loc[idx, 'Kérdés']}")
+            st.write(f"{idx + 1}. {questions.loc[idx, 'Kérdés']}")
             st.write(f"- A te válaszod: {user_answer if user_answer else 'Nincs válasz'}")
             st.write(f"- Helyes válasz: {correct_option}")
             st.write("---")
@@ -50,3 +50,4 @@ if st.button("Eredmény kiértékelése"):
 # Új teszt indítása
 if st.button("Új teszt kezdése"):
     st.session_state.clear()
+    st.experimental_rerun()
