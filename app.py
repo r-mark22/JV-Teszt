@@ -54,5 +54,5 @@ if st.button("Új teszt kezdése"):
     st.rerun()
 
 # Görgetés a tetejére, ha az új teszt kezdése gombot megnyomták
-if st.experimental_get_query_params().get("scroll") == ["top"]:
+if st.query_params.get("scroll") == ["top"]:
     st.write("<script>window.scrollTo(0, 0);</script>", unsafe_allow_html=True)
