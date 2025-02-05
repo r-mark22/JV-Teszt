@@ -77,9 +77,10 @@ if st.button("Eredmények kiértékelése"):
             st.write(f"✅ Helyes válasz: ({correct_letter}) - {correct_text}")
             st.write("---")
 
-    # Új teszt generálása gomb, amely az oldal tetejére ugrik
-    if st.button("Új teszt generálása"):
+    # Új teszt gomb egyedi kulccsal
+    if st.button("Új teszt indítása", key="restart_test"):
         st.session_state['random_questions'] = questions.sample(n=25, random_state=random.randint(1, 10000))
         st.session_state['user_answers'] = {}
-        st.experimental_rerun()  # Frissíti az oldalt és az elejére ugrik
+        st.experimental_rerun()  # Az oldal újratöltése, hogy az elejére ugorjon
+
 
