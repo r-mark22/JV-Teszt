@@ -50,4 +50,6 @@ if st.button("Eredmény kiértékelése"):
 # Új teszt indítása
 if st.button("Új teszt kezdése"):
     st.session_state.clear()
+    st.experimental_set_query_params(scroll_to_top=True)
     st.rerun()
+
