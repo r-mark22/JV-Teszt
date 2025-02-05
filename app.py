@@ -13,29 +13,41 @@ data = load_data()
 
 st.title("Labdarúgó Játékvezetői Vizsgafelkészítő Teszt")
 
-# Kérdések előkészítése
-questions = data.dropna().sample(25).reset_index(drop=True)  # Véletlenszerűen kiválasztott 25 kérdés
-user_answers = []
+# Kérdések tárolása session state-ben
+if "questions" not in st.session_state:
+    st.session_state.questions = data.dropna().sample(25).reset_index(drop=True)
+if "user_answers" not in st.session_state:
+    st.session_state.user_answers = [None] * 25
+
+questions = st.session_state.questions
+user_answers = st.session_state.user_answers
 
 for idx, row in questions.iterrows():
     st.subheader(f"{idx + 1}. {row['ID']} - {row['Kérdés']}")
-    options = ["", row['a) válasz'], row['b) válasz'], row['c) válasz'], row['d) válasz']]
-    user_answer = st.radio("Válassz egy lehetőséget:", options, key=f"question_{idx}")
-    user_answers.append((user_answer, row[row['Helyes válasz'] + ') válasz']))
+    options = ["Válassz egy lehetőséget"] + [row['a) válasz'], row['b) válasz'], row['c) válasz'], row['d) válasz']]
+    user_answer = st.radio(
+        "", options, key=f"question_{idx}", index=0
+    )
+    if user_answer != "Válassz egy lehetőséget":
+        st.session_state.user_answers[idx] = user_answer
 
 # Kiértékelés gomb
 if st.button("Eredmény kiértékelése"):
-    correct_answers = sum(1 for user_answer, correct_answer in user_answers if user_answer == correct_answer)
+    correct_answers = sum(1 for idx, correct_answer in enumerate(questions['Helyes válasz'])
+                           if st.session_state.user_answers[idx] == questions.loc[idx, correct_answer + ') válasz'])
     st.write(f"Összes helyes válasz: {correct_answers} / 25")
     
     st.subheader("Hibás válaszok:")
-    for idx, (user_answer, correct_answer) in enumerate(user_answers):
-        if user_answer != correct_answer:
+    for idx, user_answer in enumerate(st.session_state.user_answers):
+        correct_option = questions.loc[idx, questions.loc[idx, 'Helyes válasz'] + ') válasz']]
+        if user_answer != correct_option:
             st.write(f"{idx + 1}. {questions.loc[idx, 'ID']} - {questions.loc[idx, 'Kérdés']}")
-            st.write(f"- A te válaszod: {user_answer}")
-            st.write(f"- Helyes válasz: {correct_answer}")
+            st.write(f"- A te válaszod: {user_answer if user_answer else 'Nincs válasz'}")
+            st.write(f"- Helyes válasz: {correct_option}")
             st.write("---")
 
 # Új teszt indítása
 if st.button("Új teszt kezdése"):
+    del st.session_state.questions
+    del st.session_state.user_answers
     st.experimental_rerun()
