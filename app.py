@@ -51,24 +51,35 @@ for index, row in st.session_state['random_questions'].iterrows():
     )
 
 if st.button("Eredmények kiértékelése"):
-    score = sum(1 for i in st.session_state['user_answers'] if st.session_state['user_answers'][i] == st.session_state['random_questions'].loc[i, 'Helyes válasz'])
+    score = 0
+    incorrect_answers = []
+
+    for i, row in st.session_state['random_questions'].iterrows():
+        user_answer = st.session_state['user_answers'].get(i, None)  # Ha nincs válasz, None
+        correct_answer_letter = row['Helyes válasz'].strip()
+        correct_column = correct_answer_letter + ') válasz'
+        correct_answer = row.get(correct_column, "N/A")  # Ha nem találja, akkor "N/A"
+
+        user_answer_text = row.get(user_answer + ') válasz', "N/A") if user_answer else "Nem adott választ"
+
+        if user_answer == correct_answer_letter:
+            score += 1
+        else:
+            incorrect_answers.append((row['ID'], row['Kérdés'], user_answer_text, correct_answer_letter, correct_answer))
+
     st.write(f"Elért pontszám: {score}/25")
 
-    # Hibás válaszok listázása
-    st.subheader("Hibásan megválaszolt kérdések:")
-    wrong_answers = [
-        (row['ID'], row['Kérdés'], row['Helyes válasz'], row[row['Helyes válasz'] + ') válasz'])
-        for i, row in st.session_state['random_questions'].iterrows()
-        if st.session_state['user_answers'][i] != row['Helyes válasz']
-    ]
-    
-    for q_id, question, correct_answer, correct_text in wrong_answers:
-        st.write(f"**{q_id}. {question}**")
-        st.write(f"✅ Helyes válasz: {correct_answer}) {correct_text}")
+    if incorrect_answers:
+        st.write("❌ Hibás válaszaid:")
+        for id, question, user_answer_text, correct_letter, correct_text in incorrect_answers:
+            st.write(f"**{id}. {question}**")
+            st.write(f"🔴 Rossz válaszod: {user_answer_text}")
+            st.write(f"✅ Helyes válasz: ({correct_letter}) - {correct_text}")
+            st.write("---")
 
-    # Új teszt gomb a végén
-    if st.button("Új teszt indítása"):
-        st.session_state.pop('random_questions')
-        st.session_state.pop('user_answers')
-        st.experimental_rerun()
+    # Új teszt generálása gomb, amely az oldal tetejére ugrik
+    if st.button("Új teszt generálása"):
+        st.session_state['random_questions'] = questions.sample(n=25, random_state=random.randint(1, 10000))
+        st.session_state['user_answers'] = {}
+        st.experimental_rerun()  # Frissíti az oldalt és az elejére ugrik
 
