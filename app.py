@@ -22,6 +22,9 @@ def generate_test():
 if 'random_questions' not in st.session_state:
     generate_test()
 
+# Oldal tetejére ugrásra szolgáló konténer
+scroll_placeholder = st.empty()
+
 st.title("Labdarúgó Játékvezetői Teszt")
 st.write("Véletlenszerűen kiválasztott 25 kérdés.")
 
@@ -70,11 +73,8 @@ if st.button("Eredmények kiértékelése"):
             st.write(f"✅ Helyes válasz: ({correct_letter}) - {correct_text}")
             st.write("---")
 
-# Új teszt generálása gomb, ami frissít és az oldal tetejére ugrik
+# Új teszt generálása és az oldal tetejére ugrás
 if st.session_state.get('test_finished', False):
     if st.button("Új teszt generálása"):
         generate_test()
-        st.experimental_rerun()  # Újratöltés az oldal tetejére ugrás érdekében
-
-
-
+        scroll_placeholder.markdown("<script>window.scrollTo(0, 0);</script>", unsafe_allow_html=True)  # Oldal tetejére ugrás
