@@ -47,9 +47,19 @@ if st.button("Eredmény kiértékelése"):
             st.write(f"- Helyes válasz: {correct_option}")
             st.write("---")
 
+# JavaScript az oldal tetejére ugráshoz
+scroll_to_top_js = """
+    <script>
+        function scrollToTop() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+    </script>
+"""
+
+st.markdown(scroll_to_top_js, unsafe_allow_html=True)
+
 # Új teszt indítása
 if st.button("Új teszt kezdése"):
     st.session_state.clear()
-    st.experimental_set_query_params(scroll_to_top=True)
     st.rerun()
-
+    st.markdown("<script>scrollToTop();</script>", unsafe_allow_html=True)
