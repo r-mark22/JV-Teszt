@@ -19,8 +19,8 @@ user_answers = []
 
 for idx, row in questions.iterrows():
     st.subheader(f"{idx + 1}. {row['ID']} - {row['Kérdés']}")
-    options = [row['a) válasz'], row['b) válasz'], row['c) válasz'], row['d) válasz']]
-    user_answer = st.radio("Válassz egy lehetőséget:", options, key=f"question_{idx}", index=-1)
+    options = ["", row['a) válasz'], row['b) válasz'], row['c) válasz'], row['d) válasz']]
+    user_answer = st.radio("Válassz egy lehetőséget:", options, key=f"question_{idx}")
     user_answers.append((user_answer, row[row['Helyes válasz'] + ') válasz']))
 
 # Kiértékelés gomb
