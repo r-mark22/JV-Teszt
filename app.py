@@ -3,7 +3,7 @@ import pandas as pd
 import random
 
 # Az Excel-fájl permanens beolvasása GitHub repositoryból
-DATA_URL = "https://raw.githubusercontent.com/felhasznalonev/repo-neve/main/kerdesek.xlsx"
+DATA_URL = "https://raw.githubusercontent.com/r-mark22/JV-Teszt/main/kerdesek.xlsx"
 
 @st.cache_data
 def load_data():
@@ -13,18 +13,15 @@ data = load_data()
 
 st.title("Labdarúgó Játékvezetői Vizsgafelkészítő Teszt")
 
-# Ellenőrizzük az oszlopneveket
-st.write("Betöltött adatok oszlopai:", data.columns.tolist())
-
 # Kérdések előkészítése
-questions = data.sample(25).reset_index(drop=True)  # Véletlenszerűen kiválasztott 25 kérdés
+questions = data.dropna().sample(25).reset_index(drop=True)  # Véletlenszerűen kiválasztott 25 kérdés
 user_answers = []
 
 for idx, row in questions.iterrows():
     st.subheader(f"{idx + 1}. {row['ID']} - {row['Kérdés']}")
-    options = [row.get('Válasz A', 'N/A'), row.get('Válasz B', 'N/A'), row.get('Válasz C', 'N/A'), row.get('Válasz D', 'N/A')]
+    options = [row['a) válasz'], row['b) válasz'], row['c) válasz'], row['d) válasz']]
     user_answer = st.radio("Válassz egy lehetőséget:", options, key=f"question_{idx}", index=-1)
-    user_answers.append((user_answer, row.get('Helyes Válasz', 'N/A')))
+    user_answers.append((user_answer, row[row['Helyes válasz'] + ') válasz']))
 
 # Kiértékelés gomb
 if st.button("Eredmény kiértékelése"):
