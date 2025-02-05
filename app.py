@@ -39,7 +39,7 @@ if st.button("Eredmény kiértékelése"):
     
     st.subheader("Hibás válaszok:")
     for idx, user_answer in enumerate(st.session_state.user_answers):
-        correct_option = questions.loc[idx, questions.loc[idx, 'Helyes válasz'] + ') válasz']]
+        correct_option = questions.loc[idx, questions.loc[idx, 'Helyes válasz'] + ') válasz']
         if user_answer != correct_option:
             st.write(f"{idx + 1}. {questions.loc[idx, 'ID']} - {questions.loc[idx, 'Kérdés']}")
             st.write(f"- A te válaszod: {user_answer if user_answer else 'Nincs válasz'}")
