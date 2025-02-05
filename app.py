@@ -47,10 +47,10 @@ if st.button("Eredmény kiértékelése"):
             st.write(f"- Helyes válasz: {correct_option}")
             st.write("---")
 
-# JavaScript görgetés az oldal tetejére
+# JavaScript görgetés az oldal tetejére beillesztése
 scroll_to_top_js = """
     <script>
-        window.scrollTo({top: 0, behavior: 'smooth'});
+        window.onload = () => window.scrollTo(0, 0);
     </script>
 """
 
